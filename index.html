@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>카톡 이모티콘 미리보기 · ODDMOON LAB</title>
+<script>
+/* ── 복제 방지 (ODDMOON LAB 공통) ── */
+(function(){
+  var allow=['oddmoonlab.github.io','localhost','127.0.0.1'];
+  var okHost=location.protocol==='file:'||(location.protocol==='https:'||location.protocol==='http:')&&allow.indexOf(location.hostname)>-1;
+  var framed=false;try{framed=window.top!==window.self&&window.top.location.hostname!==location.hostname;}catch(e){framed=true;}
+  if(!okHost||framed){
+    document.addEventListener('DOMContentLoaded',function(){
+      document.body.innerHTML='<div style="font-family:sans-serif;padding:60px 24px;text-align:center;color:#222"><h2>접근할 수 없는 주소예요</h2><p>이 도구는 ODDMOON LAB 수업 페이지(oddmoonlab.github.io)에서만 사용할 수 있어요.</p><p style="color:#888;font-size:13px">© 2026 ODDMOON LAB · 유여진 강사</p></div>';
+    });
+  }
+  ['copy','cut','selectstart','dragstart'].forEach(function(ev){
+    document.addEventListener(ev,function(e){ if(!e.target.closest||!e.target.closest('input,textarea')) e.preventDefault(); });
+  });
+  document.addEventListener('contextmenu',function(e){ if(!e.target.closest('input,textarea')) e.preventDefault(); });
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase(), m=e.ctrlKey||e.metaKey;
+    if(e.key==='F12'||(m&&['s','u','p'].indexOf(k)>-1)||(m&&e.shiftKey&&['i','j','c'].indexOf(k)>-1)||(e.metaKey&&e.altKey&&['i','j','c','u'].indexOf(k)>-1)){ e.preventDefault(); }
+  });
+})();
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;background:#efeeea;color:#111;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+img{-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+svg.i{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ───── 상단 바 ───── */
+.notice{max-width:1100px;margin:0 auto;padding:7px 22px 0;font-size:12px;color:#8a5a00}
+.notice span{display:inline-block;background:#fff3c4;border:1px solid #f0d77a;border-radius:999px;padding:4px 12px}
+.top{height:58px;display:flex;align-items:center;gap:12px;padding:0 22px;max-width:1100px;margin:0 auto}
+.top .brand{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:#999}
+.top h1{font-size:19px;letter-spacing:-.02em}
+.top .sp{flex:1}
+.tbtn{border:1.5px solid #111;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;background:#fff;display:flex;align-items:center;gap:6px}
+.tbtn.y{background:#fee500}
+
+/* ───── 두 창 ───── */
+.stage{display:flex;gap:16px;justify-content:center;align-items:stretch;padding:4px 16px 14px;height:calc(100dvh - 58px - 30px - 34px);min-height:560px}
+.win{background:#fff;border:1px solid #c9c9c9;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.10);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.wbar{height:30px;flex:none;display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:0 12px;color:#777}
+.wbar svg{stroke:currentColor;fill:none;stroke-width:1.3}
+.emo-win{width:360px}
+.chat-win{width:390px}
+
+/* 이모티콘 창 */
+.etabs{display:flex;align-items:center;gap:4px;padding:2px 16px 0;height:46px;flex:none;border-bottom:1px solid #eee}
+.etab{font-size:17px;font-weight:500;color:#bdbdbd;padding:8px 6px;position:relative}
+.etab.on{color:#111}
+.etab.on::after{content:"";position:absolute;left:4px;right:4px;bottom:-1px;height:2px;background:#111}
+.etab .cnt{font-size:11px;color:#aaa;margin-left:2px;vertical-align:2px}
+.etabs .sp{flex:1}
+.ebtn{font-size:12px;color:#666;padding:5px 9px;border-radius:999px;border:1px solid #ddd}
+.ebtn.on{background:#111;color:#fff;border-color:#111}
+.tstrip{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px;border-bottom:1px solid #eee;flex:none;max-height:96px;overflow-y:auto}
+.ticon{width:40px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;flex:none}
+.ticon img{max-width:32px;max-height:27px;object-fit:contain;filter:grayscale(1);opacity:.5;pointer-events:none}
+.ticon:hover img{opacity:.8}
+.ticon.sel{background:#f1f1f1;box-shadow:inset 0 0 0 1px #cfcfcf}
+.ticon.sel img{filter:none;opacity:1}
+.ticon.recent{color:#555;cursor:default}
+.ticon.empty .ph{font-size:10px;color:#aaa;border:1.3px dashed #c8c8c8;border-radius:6px;width:32px;height:26px;display:flex;align-items:center;justify-content:center}
+.ticon.add{color:#b5b5b5;font-size:20px;font-weight:300;border:1.3px dashed #d0d0d0}
+.ticon.over{background:#fff3a0;box-shadow:inset 0 0 0 1.5px #111}
+.ticon .rm{display:none;position:absolute;top:-4px;right:-4px;width:17px;height:17px;border-radius:50%;background:#111;color:#fff;font-size:10px;line-height:17px;text-align:center}
+.editing-strip .ticon:not(.add):not(.recent) .rm{display:block}
+.emode{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 4px;font-size:13px;color:#888;flex:none}
+.emode b{color:#111;font-weight:600}
+.egrid{flex:1;overflow-y:auto;display:grid;align-content:start;padding:6px 12px 16px;gap:4px;-webkit-overflow-scrolling:touch;position:relative}
+.egrid.g-emo{grid-template-columns:repeat(4,minmax(0,1fr))}
+.egrid.g-mini{grid-template-columns:repeat(6,minmax(0,1fr))}
+.pitem{position:relative;aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:pan-y;-webkit-user-select:none;user-select:none;transition:transform .12s,background .12s}
+.pitem:hover{background:#f4f4f4}
+.pitem img{width:92%;height:92%;object-fit:contain;pointer-events:none}
+.egrid.g-mini .pitem img{width:86%;height:86%}
+.pitem.lift{transform:scale(.9);opacity:.45}
+.pitem.flash{background:#fff3a0}
+.pitem .rm{display:none;position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#111;color:#fff;font-size:11px;line-height:20px;text-align:center}
+.editing .pitem .rm{display:block}
+.editing .pitem{animation:wig .25s infinite alternate}
+@keyframes wig{from{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+.pitem.add{border:1.5px dashed #cfcfcf;color:#b5b5b5;font-size:26px;font-weight:300}
+.edrop{grid-column:1/-1;border:2px dashed #cfcfcf;border-radius:16px;padding:34px 16px;text-align:center;color:#888;font-size:13.5px;line-height:1.6;cursor:pointer;margin-top:6px}
+.edrop b{display:block;color:#111;font-size:15px;margin-bottom:4px}
+.edrop .ic{font-size:30px;display:block;margin-bottom:6px}
+.emo-win.over .egrid{background:#fffbe0;outline:2px dashed #111;outline-offset:-8px}
+.efoot{flex:none;font-size:11px;color:#9a9a9a;padding:8px 16px 10px;border-top:1px solid #f0f0f0;line-height:1.45}
+
+/* 채팅 창 */
+.chat-win{
+  --chat-bg:#bacee0;--head-fg:#111;--meta:#556270;--name:#3d4650;--other-bubble:#fff;--other-text:#111;--me-bubble:#fee500;--me-text:#111;
+  --day-bg:rgba(0,0,0,.12);--day-fg:#fff;--unread:#d4b300;
+  --emo:120px;--mini1:100px;--minis:36px;--inl:20px;
+  background:var(--chat-bg);border-color:#b9c3cc
+}
+.chat-win[data-theme=dark]{--chat-bg:#232528;--head-fg:#eee;--meta:rgba(255,255,255,.45);--name:#cfd2d6;--other-bubble:#3a3c40;--other-text:#eee;--day-bg:rgba(255,255,255,.1);--day-fg:#ccc;--unread:#e8c800}
+.chat-win[data-theme=white]{--chat-bg:#fff;--meta:#9a9a9a;--name:#555;--other-bubble:#f1f1f1;--day-bg:#efefef;--day-fg:#8a8a8a}
+.chat-win[data-theme=pink]{--chat-bg:#f6d9de;--meta:#9a7179;--name:#6b4d53}
+.chat-win[data-theme=mint]{--chat-bg:#cfeee2;--meta:#5c8576;--name:#41594f}
+.chat-win.no-unread .unread{display:none}
+.chat-win .wbar{color:var(--head-fg);opacity:.7}
+.chead{height:58px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 6px;color:var(--head-fg)}
+.chead .hav{width:42px;height:42px;border-radius:16px;overflow:hidden;flex:none}
+.chead .hav img{width:100%;height:100%;object-fit:cover;display:block}
+.chead .ttl{flex:1;min-width:0;font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chead .ttl em{display:block;font-style:normal;font-weight:400;font-size:11.5px;opacity:.55;margin-top:1px}
+.chead .hi{width:30px;height:30px;display:flex;align-items:center;justify-content:center}
+
+.chat-wrap{flex:1;position:relative;min-height:0}
+.chat{position:absolute;inset:0;overflow-y:auto;padding:4px 12px 14px;-webkit-overflow-scrolling:touch}
+.day{display:flex;justify-content:center;margin:4px 0 12px}
+.day span{background:var(--day-bg);color:var(--day-fg);font-size:11.5px;padding:4px 12px;border-radius:999px}
+.empty-tip{text-align:center;color:var(--meta);font-size:12.5px;line-height:1.7;margin-top:34px}
+
+.row{display:flex;margin-top:4px;position:relative}
+.row.first{margin-top:12px}
+.row.me{justify-content:flex-end}
+.avatar{width:38px;height:38px;flex:none;margin-right:8px;border-radius:15px;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.row:not(.first) .avatar{visibility:hidden;height:0}
+.col{min-width:0;max-width:calc(100% - 46px)}
+.name{font-size:12.5px;color:var(--name);margin:1px 0 5px 2px}
+.line{display:flex;align-items:flex-end;gap:5px}
+.row.me .line{max-width:90%}
+.meta{display:flex;flex-direction:column;font-size:10.5px;color:var(--meta);line-height:1.25;flex:none;white-space:nowrap;padding-bottom:1px}
+.row.me .meta{align-items:flex-end}
+.unread{color:var(--unread);font-weight:700;font-size:11px}
+.content{position:relative;min-width:0}
+.emo{width:var(--emo);height:var(--emo);object-fit:contain;display:block}
+.mini1{width:var(--mini1);height:var(--mini1);object-fit:contain;display:block}
+.minis{display:flex;flex-wrap:nowrap;gap:0;align-items:flex-end}
+.row.me .minis{justify-content:flex-end}
+.minis img{width:var(--minis);height:var(--minis);object-fit:contain;display:block;margin:0;flex:none}
+.bubble{position:relative;padding:7px 10px;border-radius:13px;font-size:14.5px;line-height:1.45;word-break:break-word;white-space:pre-wrap;max-width:250px;background:var(--other-bubble);color:var(--other-text)}
+.row.me .bubble{background:var(--me-bubble);color:var(--me-text)}
+.row.first.other .bubble{border-top-left-radius:4px}
+.row.first.me .bubble{border-top-right-radius:4px}
+.row.first.other .bubble::before,.row.first.me .bubble::before{content:"";position:absolute;top:0;width:9px;height:11px;background:inherit}
+.row.first.other .bubble::before{left:-7px;clip-path:polygon(0 0,100% 0,100% 100%)}
+.row.first.me .bubble::before{right:-7px;clip-path:polygon(0 0,100% 0,0 100%)}
+.bubble img.inl{width:var(--inl);height:var(--inl);object-fit:contain;vertical-align:middle;margin:0;display:inline}
+.del{position:absolute;top:-8px;width:24px;height:24px;border-radius:50%;background:#111;color:#fff;font-size:12px;line-height:24px;text-align:center;display:none;z-index:3}
+.row.me .del{left:-10px}
+.row.other .del{right:-10px}
+.content.picked{outline:2px solid rgba(0,0,0,.35);outline-offset:3px;border-radius:12px}
+.content.picked .del{display:block}
+
+/* 드롭 힌트 */
+.dz{position:absolute;inset:0;display:none;grid-template-columns:1fr 1fr;gap:6px;padding:6px;z-index:8;pointer-events:none}
+.dz.show{display:grid}
+.dz div{border:2px dashed rgba(0,0,0,.28);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:rgba(0,0,0,.45);background:rgba(255,255,255,.2);transition:.12s;text-align:center}
+.chat-win[data-theme=dark] .dz div{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.6)}
+.dz div.on{background:rgba(254,229,0,.6);border-color:#111;color:#111}
+
+/* 입력창 (PC 카톡) */
+.comp{flex:none;background:#fff;border-top:1px solid #e3e3e3;display:flex;flex-direction:column}
+.chat-win[data-theme=dark] .comp{background:#1b1c1e;border-color:#2d2e31;color:#eee}
+.mq{display:none;gap:2px;padding:10px 14px 0;flex-wrap:wrap;align-items:center}
+.mq.show{display:flex}
+.mq img{width:28px;height:28px;object-fit:contain;cursor:pointer}
+.mq .n{font-size:11px;color:#999;margin-left:6px}
+.mq .clr{font-size:11px;color:#999;margin-left:auto;padding:4px 6px}
+.comp textarea{border:0;outline:0;resize:none;height:64px;padding:12px 14px 4px;font-size:14px;background:none;color:inherit}
+.comp textarea::placeholder{color:#aaa}
+.crow{display:flex;align-items:center;gap:6px;padding:4px 10px 10px}
+.crow .ic{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#555}
+.chat-win[data-theme=dark] .crow .ic{color:#bbb}
+.crow .sp{flex:1}
+.who{height:32px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;border:1.5px solid #111;background:#fee500;color:#111}
+.who.other{background:#fff}
+.who svg{width:12px;height:12px;stroke-width:2.2}
+.send{height:32px;padding:0 14px;border-radius:5px;background:#f1f1f1;color:#b3b3b3;font-size:13px;font-weight:600}
+.send.ready{background:#fee500;color:#111}
+
+.ghost{position:fixed;left:0;top:0;width:96px;height:96px;object-fit:contain;pointer-events:none;z-index:9999;filter:drop-shadow(0 8px 14px rgba(0,0,0,.25));display:none}
+.toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;font-size:13px;padding:10px 16px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:10000}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.foot{height:34px;text-align:center;font-size:11px;color:#999;line-height:1.4}
+
+/* ───── 설정 서랍 ───── */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:500;display:none}
+.dim.show{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,92vw);background:#fff;z-index:501;transform:translateX(105%);transition:transform .25s;padding:20px 20px 30px;overflow-y:auto;display:flex;flex-direction:column;gap:20px;border-left:1.5px solid #111}
+.drawer.show{transform:none}
+.dhead{display:flex;justify-content:space-between;align-items:center}
+.dhead h2{font-size:18px}
+.dhead button{font-size:20px;width:34px;height:34px}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sec-t{font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.btn{border:1.5px solid #111;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;background:#fff}
+.btn.y{background:#fee500}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.field{display:flex;align-items:center;gap:10px;font-size:13px}
+.field label{width:84px;flex:none;color:#555}
+.field input[type=text]{flex:1;min-width:0;border:1.5px solid #ddd;border-radius:10px;padding:7px 10px;font-size:14px}
+.field input[type=text]:focus{outline:none;border-color:#111}
+.field input[type=range]{flex:1;accent-color:#111}
+.field output{width:46px;text-align:right;font-size:12px;color:#777;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:#6d6d6d;background:#f6f4ee;border-radius:10px;padding:9px 11px;line-height:1.55}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;border:1.5px solid transparent;cursor:pointer}
+.chip.on{border-color:#111}
+.chip input[type=color]{width:16px;height:16px;border:0;padding:0;background:none;vertical-align:-3px;margin-left:4px}
+.avatar-edit{display:flex;align-items:center;gap:8px}
+.avatar-edit img{width:40px;height:40px;border-radius:15px;object-fit:cover;background:#eee}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:#444}
+.check input{accent-color:#111;width:16px;height:16px}
+.howto{font-size:13px;color:#444;line-height:1.65}
+.howto ol{padding-left:18px}
+.howto li{margin-bottom:5px}
+.safe{font-size:12px;color:#5f7a6a;background:#eef6f1;border-radius:10px;padding:9px 11px;line-height:1.5}
+
+@media (max-width:780px){
+  .top{padding:0 14px}
+  .top h1{font-size:16px}
+  .stage{flex-direction:column-reverse;align-items:center;height:auto}
+  .emo-win,.chat-win{width:min(420px,calc(100vw - 24px))}
+  .chat-win{height:620px}
+  .emo-win{height:420px}
+}
+</style>
+</head>
+<body>
+
+<div class="notice"><span>⚠️ 수강생 전용 페이지예요. 이 주소를 다른 사람에게 공유하거나 SNS·카페 등에 올리지 마세요.</span></div>
+<div class="top">
+  <div>
+    <div class="brand">ODDMOON LAB · KAKAO PREVIEW</div>
+    <h1>카톡 이모티콘 미리보기</h1>
+  </div>
+  <span class="sp"></span>
+  <button class="tbtn" id="helpBtn">사용 방법</button>
+  <button class="tbtn y" id="setBtn"><svg class="i" width="15" height="15" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/><path d="M10 1.5v3M10 15.5v3M1.5 10h3M15.5 10h3M4 4l2.1 2.1M13.9 13.9 16 16M4 16l2.1-2.1M13.9 6.1 16 4"/></svg>설정</button>
+</div>
+
+<div class="stage">
+  <!-- 이모티콘 창 -->
+  <section class="win emo-win" id="emoWin">
+    <div class="wbar"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1 1 9"/></svg></div>
+    <div class="etabs">
+      <button class="etab on" data-tab="emo">이모티콘<span class="cnt" id="cntEmo"></span></button>
+      <button class="etab" data-tab="mini">미니 이모티콘<span class="cnt" id="cntMini"></span></button>
+      <span class="sp"></span>
+      <button class="ebtn" id="editBtn">편집</button>
+    </div>
+    <div class="tstrip" id="tstrip"></div>
+    <div class="emode" id="emode"></div>
+    <div class="egrid g-emo" id="grid"></div>
+    <div class="efoot">🔒 올린 그림은 이 브라우저 안에서만 보여요. 어디에도 보내거나 저장하지 않아요.</div>
+    <input type="file" id="file" accept="image/png,image/gif,image/webp,image/apng,image/jpeg" multiple hidden>
+    <input type="file" id="tabFile" accept="image/png,image/gif,image/webp,image/jpeg" hidden>
+  </section>
+
+  <!-- 채팅 창 -->
+  <section class="win chat-win" id="chatWin" data-theme="sky">
+    <div class="wbar">
+      <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 5h8"/></svg>
+      <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8"/></svg>
+      <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1 1 9"/></svg>
+    </div>
+    <div class="chead">
+      <div class="hav"><img id="headAvatar" alt=""></div>
+      <div class="ttl"><span id="roomTtl">이모티콘 테스트방</span><em id="roomSub">친구</em></div>
+      <span class="hi"><svg class="i" width="19" height="19" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg></span>
+      <span class="hi"><svg class="i" width="19" height="19" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14"/></svg></span>
+    </div>
+    <div class="chat-wrap" id="chatWrap">
+      <div class="chat" id="chat"></div>
+      <div class="dz" id="dz"><div data-side="other">← 상대방이<br>보내기</div><div data-side="me">내가<br>보내기 →</div></div>
+    </div>
+    <div class="comp">
+      <div class="mq" id="mq"></div>
+      <textarea id="msgIn" placeholder="메시지 입력" enterkeyhint="send"></textarea>
+      <div class="crow">
+        <span class="ic"><svg class="i" width="18" height="18" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg></span>
+        <span class="ic"><svg class="i" width="20" height="20" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5"/><path d="M7.5 13c.9 1.2 2.1 1.9 3.5 1.9s2.6-.7 3.5-1.9"/><circle cx="8.2" cy="9" r=".6" fill="currentColor"/><circle cx="13.8" cy="9" r=".6" fill="currentColor"/></svg></span>
+        <span class="sp"></span>
+        <button class="who" id="who" title="보내는 사람 바꾸기"><svg class="i" viewBox="0 0 14 14"><path d="M2 5h10l-3-3M12 9H2l3 3"/></svg><span id="whoTxt">나</span></button>
+        <button class="send" id="sendBtn">전송</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="foot">© 2026 ODDMOON LAB · 유여진 강사. All rights reserved. · 수강생 전용 — 주소 공유·배포 및 무단 복제·수정·재배포를 금지합니다.</div>
+
+<!-- 설정 서랍 -->
+<div class="dim" id="dim"></div>
+<aside class="drawer" id="drawer">
+  <div class="dhead"><h2 id="drawerTtl">설정</h2><button id="drawerX">✕</button></div>
+
+  <div id="paneHelp" class="sec howto">
+    <ol>
+      <li>왼쪽 창에서 <b>이모티콘</b> / <b>미니 이모티콘</b> 탭을 고르고, 완성한 PNG를 끌어다 놓거나 ＋를 눌러 올리세요. 탭마다 따로 담겨요.</li>
+      <li>탭 위 작은 아이콘 줄이 <b>탭 아이콘(탭 이미지)</b>이에요. 빈 칸 ‘탭’이나 ＋에 탭 이미지를 끌어다 놓거나 눌러서 넣으세요. 고른 세트는 컬러로, 나머지는 회색으로 보여요. ＋로 넣으면 새 세트가 생겨요.</li>
+      <li>채팅창 아래 <b>‘나 / 상대’</b> 버튼으로 누가 보낼지 고르세요.</li>
+      <li><b>이모티콘</b>은 누르면 바로 채팅방에 보내져요.</li>
+      <li><b>미니 이모티콘</b>은 누를 때마다 입력창에 쌓여요. 글자와 함께 써도 되고, <b>전송</b>(또는 Enter)을 누르면 보내져요.</li>
+      <li>미니 이모티콘을 <b>6개까지</b> 보내면 말풍선 없이 크게, <b>7개부터</b>는 말풍선 안에 들어가요. 글자와 섞으면 말풍선 안에 글자 크기로 보여요.</li>
+      <li>이모티콘을 <b>꾹 눌러 채팅창 왼쪽</b>에 놓으면 상대방이, <b>오른쪽</b>에 놓으면 내가 보내요. PC에서는 파일을 채팅창 왼쪽·오른쪽에 바로 놓아도 돼요.</li>
+      <li>보낸 이모티콘을 누르면 움직이는 이모티콘이 처음부터 다시 재생되고, ✕ 버튼으로 지울 수도 있어요. 올린 이모티콘은 <b>편집</b>에서 뺄 수 있어요.</li>
+    </ol>
+    <div class="safe" style="background:#fff3c4;color:#8a5a00">⚠️ 이 페이지는 수업을 듣는 수강생만 쓸 수 있어요. 주소를 외부에 공유하거나 배포하지 마세요.</div>
+    <div class="safe">🔒 올린 그림은 이 브라우저 안에서만 쓰여요. 서버로 보내거나 저장하지 않고, 새로고침하면 사라져요.</div>
+  </div>
+
+  <div id="paneSet" style="display:flex;flex-direction:column;gap:20px">
+    <div class="sec">
+      <div class="sec-t">보이는 크기 <button class="btn sm" id="sizeReset">기본값(100%)으로</button></div>
+      <div class="field"><label><b>전체</b></label><input type="range" min="50" max="200" step="5" value="100" id="sAll"><output id="oAll">100%</output></div>
+      <div class="field"><label>일반</label><input type="range" min="50" max="200" step="5" value="100" id="sEmo"><output id="oEmo">100%</output></div>
+      <div class="field"><label>미니 1개</label><input type="range" min="50" max="200" step="5" value="100" id="sMini1"><output id="oMini1">100%</output></div>
+      <div class="field"><label>미니 2~6개</label><input type="range" min="50" max="200" step="5" value="100" id="sMinis"><output id="oMinis">100%</output></div>
+      <div class="field"><label>말풍선 속 미니</label><input type="range" min="50" max="200" step="5" value="100" id="sInl"><output id="oInl">100%</output></div>
+      <div class="note">미니 이모티콘은 1개만 보내면 크게, 2~6개는 말풍선 없이 나란히, 7개부터와 글자와 함께 보낼 때는 말풍선 안에 작게 들어가요. 미니는 서로 틈 없이 붙어서 머리·몸·꼬리를 이어 쓸 수 있어요.<br>PNG는 손대지 않고 그대로 보여 줘요. 이어 붙였을 때 틈이 보이면 캔버스 좌우 끝까지 그려지지 않은 거라, 실제 카톡에서도 똑같이 틈이 생겨요.</div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">채팅방 꾸미기</div>
+      <div class="field"><label>방 이름</label><input type="text" id="roomName" value="이모티콘 테스트방" maxlength="20"></div>
+      <div class="field"><label>상대 이름</label><input type="text" id="otherName" value="친구" maxlength="12"></div>
+      <div class="field"><label>상대 사진</label>
+        <div class="avatar-edit"><img id="avatarPrev" alt=""><button class="btn sm" id="avatarBtn">바꾸기</button><button class="btn sm" id="avatarReset">기본</button></div>
+        <input type="file" id="avatarFile" accept="image/*" hidden>
+      </div>
+      <div class="chips" id="themes">
+        <span class="chip on" data-t="sky" style="background:#bacee0">기본</span>
+        <span class="chip" data-t="dark" style="background:#232528;color:#eee">다크</span>
+        <span class="chip" data-t="white" style="background:#fff;border-color:#ddd">화이트</span>
+        <span class="chip" data-t="pink" style="background:#f6d9de">핑크</span>
+        <span class="chip" data-t="mint" style="background:#cfeee2">민트</span>
+        <label class="chip" data-t="custom" style="background:#eee">직접<input type="color" id="customColor" value="#c9b8e8"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="unreadChk" checked> 내 메시지에 안 읽음 ‘1’ 표시</label>
+    </div>
+    <div class="sec">
+      <div class="sec-t">대화</div>
+      <div class="btn-row">
+        <button class="btn y" id="sampleBtn">예시 대화 넣기</button>
+        <button class="btn" id="clearBtn">대화 지우기</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<img class="ghost" id="ghost" alt="">
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const DEFAULT_AVATAR='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#a3b7cc"/><circle cx="20" cy="15.5" r="7" fill="#fff"/><path d="M6 38c1.6-8 7.2-12 14-12s12.4 4 14 12z" fill="#fff"/></svg>');
+const MINI_BIG_MAX=6;   // 미니 이모티콘: 이 개수까지는 말풍선 없이 크게
+
+const S={packs:{emo:[],mini:[]},cur:{emo:null,mini:null},msgs:[],tab:'emo',sender:'me',miniQ:[],avatar:DEFAULT_AVATAR,otherName:'친구',editing:false};
+let uid=0;
+
+const win=$('chatWin'),chat=$('chat'),chatWrap=$('chatWrap'),grid=$('grid'),emoWin=$('emoWin'),
+      dz=$('dz'),mq=$('mq'),msgIn=$('msgIn'),sendBtn=$('sendBtn'),ghost=$('ghost');
+
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600);}
+function fmtTime(d){let h=d.getHours(),m=d.getMinutes();const ap=h<12?'오전':'오후';h=h%12||12;return ap+' '+h+':'+String(m).padStart(2,'0');}
+function minKey(d){return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()+'-'+d.getHours()+'-'+d.getMinutes();}
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function img(src,cls){const i=new Image();i.src=src;i.alt='';i.draggable=false;if(cls)i.className=cls;return i;}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function store(k,v){try{localStorage.setItem('omKakao_'+k,JSON.stringify(v));}catch(e){}}
+function load(k,d){try{const v=localStorage.getItem('omKakao_'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+
+/* ── 세트(탭 아이콘 하나 = 이모티콘 한 세트) ── */
+function newPack(tab,icon){const p={id:++uid,icon:icon||null,items:[]};S.packs[tab].push(p);return p;}
+function curPack(tab){tab=tab||S.tab;if(!S.cur[tab]||!S.packs[tab].includes(S.cur[tab])){S.cur[tab]=S.packs[tab][0]||newPack(tab);}return S.cur[tab];}
+function curItems(){return curPack().items;}
+function fresh(it){return it.file?URL.createObjectURL(it.file):it.url;}
+function countAll(tab){return S.packs[tab].reduce((n,p)=>n+p.items.length,0);}
+
+let tabTarget=null; // 'new' 또는 세트
+function setTabIcon(file,target){
+  if(!file||!file.type.startsWith('image/')){toast('이미지 파일만 올릴 수 있어요');return;}
+  const url=URL.createObjectURL(file);
+  if(target==='new'){
+    const cp=curPack();
+    if(!cp.icon&&!cp.items.length){cp.icon=url;}
+    else{S.cur[S.tab]=newPack(S.tab,url);}
+    toast('새 탭 아이콘을 넣었어요');
+  }else{target.icon=url;S.cur[S.tab]=target;toast('탭 아이콘을 바꿨어요');}
+  renderGrid();
+}
+$('tabFile').onchange=e=>{setTabIcon(e.target.files[0],tabTarget);e.target.value='';};
+
+function renderStrip(){
+  const st=$('tstrip');st.innerHTML='';
+  st.classList.toggle('editing-strip',S.editing);
+  const rc=el('div','ticon recent','<svg class="i" width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="M11 6.5V11l3 2"/></svg>');rc.title='최근 사용';
+  st.appendChild(rc);
+  const cp=curPack();
+  S.packs[S.tab].forEach(p=>{
+    const t=el('div','ticon'+(p===cp?' sel':'')+(p.icon?'':' empty'));t.dataset.pack=p.id;
+    if(p.icon)t.appendChild(img(p.icon));else t.appendChild(el("span","ph","탭"));
+    t.title=p.icon?'탭 아이콘 (다시 누르면 바꾸기)':'탭 아이콘 넣기';
+    const rm=el('span','rm','✕');t.appendChild(rm);
+    t.onclick=e=>{
+      if(S.editing){
+        if(S.packs[S.tab].length===1&&!p.icon&&!p.items.length)return;
+        S.packs[S.tab]=S.packs[S.tab].filter(v=>v!==p);
+        S.miniQ=S.miniQ.filter(v=>!p.items.includes(v));renderMQ();updateSend();
+        renderGrid();return;
+      }
+      if(p===cp){tabTarget=p;$('tabFile').click();return;}
+      S.cur[S.tab]=p;renderGrid();
+    };
+    st.appendChild(t);
+  });
+  const add=el('div','ticon add','+');add.dataset.pack='new';add.title='탭 아이콘 추가 (새 세트)';
+  add.onclick=()=>{tabTarget='new';$('tabFile').click();};
+  st.appendChild(add);
+}
+
+/* ── 움직이는 이모티콘 무한 반복 (화면에 띄울 때만, 원본 파일은 그대로) ── */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u,a,b){let c=0xFFFFFFFF;for(let i=a;i<b;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function loopForever(u){
+  // GIF
+  if(u[0]===0x47&&u[1]===0x49&&u[2]===0x46){
+    const sig=[0x21,0xFF,0x0B,78,69,84,83,67,65,80,69,50,46,48];
+    for(let i=13;i<u.length-18;i++){let ok=true;for(let j=0;j<14;j++)if(u[i+j]!==sig[j]){ok=false;break;}
+      if(ok){const o=new Uint8Array(u);o[i+16]=0;o[i+17]=0;return o;}}
+    const f=u[10];let pos=13;if(f&0x80)pos+=3*(1<<((f&7)+1));
+    const ext=new Uint8Array(sig.concat([3,1,0,0,0]));
+    const o=new Uint8Array(u.length+ext.length);o.set(u.subarray(0,pos));o.set(ext,pos);o.set(u.subarray(pos),pos+ext.length);return o;
+  }
+  // WEBP (ANIM 청크)
+  if(u[0]===0x52&&u[1]===0x49&&u[8]===0x57&&u[9]===0x45){
+    for(let i=12;i+8<u.length;){const id=String.fromCharCode(u[i],u[i+1],u[i+2],u[i+3]);const len=u[i+4]|u[i+5]<<8|u[i+6]<<16|u[i+7]<<24;
+      if(id==='ANIM'){const o=new Uint8Array(u);o[i+12]=0;o[i+13]=0;return o;}
+      if(id==='VP8X'||id==='ICCP'){i+=8+len+(len&1);continue;}break;}
+    return null;
+  }
+  // APNG (acTL 청크)
+  if(u[0]===0x89&&u[1]===0x50&&u[2]===0x4E&&u[3]===0x47){
+    for(let i=8;i+12<=u.length;){const len=(u[i]<<24|u[i+1]<<16|u[i+2]<<8|u[i+3])>>>0;const id=String.fromCharCode(u[i+4],u[i+5],u[i+6],u[i+7]);
+      if(id==='acTL'){const o=new Uint8Array(u);o.fill(0,i+12,i+16);const c=crc32(o,i+4,i+8+len);o[i+8+len]=c>>>24;o[i+9+len]=c>>>16&255;o[i+10+len]=c>>>8&255;o[i+11+len]=c&255;return o;}
+      if(id==='IDAT'||id==='IEND')break;i+=12+len;}
+  }
+  return null;
+}
+async function loopFile(f){
+  try{const u=new Uint8Array(await f.arrayBuffer());const o=loopForever(u);return o?new Blob([o],{type:f.type}):f;}catch(e){return f;}
+}
+
+/* ── 파일 추가 (현재 탭·세트에) ── */
+async function addFiles(files,tab){
+  tab=tab||S.tab;
+  const list=[...files].filter(f=>f.type.startsWith('image/'));
+  list.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+  const pack=curPack(tab);
+  const blobs=await Promise.all(list.map(loopFile));
+  const added=list.map((f,i)=>{const it={id:++uid,name:f.name,file:blobs[i],url:URL.createObjectURL(blobs[i])};pack.items.push(it);return it;});
+  if(added.length){renderGrid();toast((tab==='emo'?'이모티콘 ':'미니 이모티콘 ')+added.length+'개 추가');}
+  else if(files.length)toast('이미지 파일만 올릴 수 있어요');
+  return added;
+}
+$('file').onchange=e=>{addFiles(e.target.files);e.target.value='';};
+
+/* ── 이모티콘 창 ── */
+function renderGrid(){
+  const lib=curItems();
+  renderStrip();
+  grid.className='egrid g-'+S.tab+(S.editing?' editing':'');grid.innerHTML='';
+  $('cntEmo').textContent=countAll('emo')||'';$('cntMini').textContent=countAll('mini')||'';
+  $('emode').innerHTML=S.tab==='emo'
+    ?'<span>누르면 <b>바로 전송</b> · 꾹 눌러 끌기</span>'
+    :'<span>누르면 <b>입력창에 추가</b> · 꾹 눌러 끌기</span>';
+  $('editBtn').style.visibility=(lib.length||S.packs[S.tab].length>1)?'visible':'hidden';
+  if(!lib.length){
+    const d=el('div','edrop','<span class="ic">'+(S.tab==='emo'?'🖼️':'🧩')+'</span><b>'+(S.tab==='emo'?'이모티콘':'미니 이모티콘')+' 올리기</b>눌러서 파일 선택<br>PC에서는 여기로 끌어다 놓기<br><small style="color:#aaa">PNG · GIF · WEBP 여러 장 가능</small>');
+    d.onclick=()=>$('file').click();grid.appendChild(d);return;
+  }
+  lib.forEach(it=>{
+    const p=el('div','pitem');p.dataset.id=it.id;p.title=it.name;
+    p.appendChild(img(it.url));
+    const rm=el('span','rm','✕');p.appendChild(rm);
+    grid.appendChild(p);
+  });
+  const add=el('div','pitem add','+');add.title='더 올리기';add.onclick=()=>$('file').click();
+  grid.appendChild(add);
+}
+document.querySelectorAll('.etab').forEach(b=>b.onclick=()=>{
+  S.tab=b.dataset.tab;S.editing=false;$('editBtn').classList.remove('on');$('editBtn').textContent='편집';
+  document.querySelectorAll('.etab').forEach(x=>x.classList.toggle('on',x===b));
+  renderGrid();
+});
+$('editBtn').onclick=()=>{S.editing=!S.editing;$('editBtn').classList.toggle('on',S.editing);$('editBtn').textContent=S.editing?'완료':'편집';renderGrid();};
+function itemById(id){return curItems().find(v=>v.id==id);}
+function removeItem(it){const p=curPack();p.items=p.items.filter(v=>v!==it);S.miniQ=S.miniQ.filter(v=>v!==it);renderMQ();updateSend();if(!p.items.length&&S.packs[S.tab].length<2){S.editing=false;$('editBtn').classList.remove('on');$('editBtn').textContent='편집';}renderGrid();}
+
+function flash(it){const p=grid.querySelector('.pitem[data-id="'+it.id+'"]');if(p){p.classList.add('flash');setTimeout(()=>p.classList.remove('flash'),220);}}
+function tapItem(it){
+  if(S.editing){removeItem(it);return;}
+  flash(it);
+  if(S.tab==='emo'){
+    push({side:S.sender,type:'emo',srcs:[it]});
+    render(true);
+  }else{
+    if(S.miniQ.length>=30){toast('한 번에 30개까지 담을 수 있어요');return;}
+    S.miniQ.push(it);renderMQ();updateSend();
+  }
+}
+
+function renderMQ(){
+  mq.innerHTML='';
+  if(!S.miniQ.length){mq.classList.remove('show');return;}
+  mq.classList.add('show');
+  S.miniQ.forEach((it,i)=>{const im=img(it.url);im.title='눌러서 빼기';im.onclick=()=>{S.miniQ.splice(i,1);renderMQ();updateSend();};mq.appendChild(im);});
+  const n=S.miniQ.length;
+  mq.appendChild(el('span','n',n+'개 · '+(n<=MINI_BIG_MAX?'크게 보여요':'말풍선 안에 들어가요')));
+  const c=el('button','clr','모두 지우기');c.onclick=()=>{S.miniQ=[];renderMQ();updateSend();};mq.appendChild(c);
+}
+
+/* ── 보내는 사람 ── */
+function setSender(s){
+  S.sender=s;$('who').classList.toggle('other',s==='other');
+  $('whoTxt').textContent=s==='me'?'나':'상대 ('+S.otherName+')';
+}
+$('who').onclick=()=>setSender(S.sender==='me'?'other':'me');
+
+/* ── 전송 ── */
+function updateSend(){sendBtn.classList.toggle('ready',!!(S.miniQ.length||msgIn.value.trim()));}
+msgIn.addEventListener('input',updateSend);
+msgIn.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send();}});
+sendBtn.onclick=()=>send();
+
+/* 메시지마다 새 주소로 이미지를 띄워야 움직이는 GIF가 처음부터 재생돼요 (같은 주소면 키보드 미리보기와 재생이 묶여서, 반복 횟수가 끝난 GIF는 멈춘 채로 보임) */
+function push(m){m.id=++uid;m.time=new Date();m.urls=m.srcs.map(fresh);S.msgs.push(m);}
+function replay(m,c){const old=m.urls;m.urls=m.srcs.map(fresh);const ims=c.querySelectorAll('img');ims.forEach((im,i)=>{if(m.urls[i])im.src=m.urls[i];});old.forEach(u=>{if(u.startsWith('blob:')&&!S.msgs.some(x=>x!==m&&x.urls.includes(u)))setTimeout(()=>URL.revokeObjectURL(u),1000);});}
+function send(){
+  const side=S.sender, text=msgIn.value.replace(/\s+$/,'');
+  if(S.miniQ.length){
+    const srcs=S.miniQ.slice();
+    push(text.trim()?{side,type:'text',text,srcs}:{side,type:'mini',srcs});
+    S.miniQ=[];renderMQ();
+  }else if(text.trim()){
+    push({side,type:'text',text,srcs:[]});
+  }else return;
+  msgIn.value='';updateSend();render(true);
+}
+
+/* ── 채팅 그리기 ── */
+const dayEl=el('div','day');
+(function(){const d=new Date(),w='일월화수목금토'[d.getDay()];dayEl.innerHTML='<span>'+d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+w+'요일</span>';})();
+const emptyEl=el('div','empty-tip','왼쪽 창에서 이모티콘을 눌러 보내 보세요.<br>꾹 눌러 채팅창 왼쪽·오른쪽에 놓아도 돼요.');
+
+function buildContent(m){
+  const c=el('div','content');
+  if(m.type==='emo'){c.appendChild(img(m.urls[0],'emo'));}
+  else if(m.type==='mini'&&m.srcs.length===1){c.appendChild(img(m.urls[0],'mini1'));}
+  else if(m.type==='mini'&&m.srcs.length<=MINI_BIG_MAX){const w=el('div','minis');m.urls.forEach(u=>w.appendChild(img(u)));c.appendChild(w);}
+  else{
+    const b=el('div','bubble');b.innerHTML=m.text?esc(m.text):'';
+    m.urls.forEach(u=>b.appendChild(img(u,'inl')));
+    c.appendChild(b);
+  }
+  const d=el('button','del','✕');d.title='지우기';
+  d.onclick=e=>{e.stopPropagation();S.msgs=S.msgs.filter(v=>v!==m);render();};
+  c.appendChild(d);
+  c.onclick=()=>{replay(m,c);const on=!c.classList.contains('picked');chat.querySelectorAll('.picked').forEach(x=>x.classList.remove('picked'));if(on)c.classList.add('picked');};
+  return c;
+}
+function buildRow(m,first,last){
+  const r=el('div','row '+m.side+(first?' first':''));
+  const meta=el('div','meta');
+  if(m.side==='me')meta.appendChild(el('span','unread','1'));
+  if(last)meta.appendChild(el('span','time',fmtTime(m.time)));
+  const line=el('div','line');
+  if(m.side==='me'){line.appendChild(meta);line.appendChild(buildContent(m));r.appendChild(line);}
+  else{
+    const av=el('div','avatar');av.appendChild(img(S.avatar));r.appendChild(av);
+    const col=el('div','col');
+    if(first)col.appendChild(el('div','name',esc(S.otherName)));
+    line.appendChild(buildContent(m));line.appendChild(meta);col.appendChild(line);r.appendChild(col);
+  }
+  return r;
+}
+function render(toBottom){
+  const els=[dayEl];
+  if(!S.msgs.length)els.push(emptyEl);
+  const key=x=>x?x.side+'|'+minKey(x.time):'';
+  S.msgs.forEach((m,i)=>{
+    const first=key(S.msgs[i-1])!==key(m), last=key(S.msgs[i+1])!==key(m), sig=first+'|'+last;
+    if(!m._el||m._sig!==sig){const n=buildRow(m,first,last);if(m._el&&m._el.parentNode)m._el.replaceWith(n);m._el=n;m._sig=sig;}
+    els.push(m._el);
+  });
+  [...chat.children].forEach(c=>{if(!els.includes(c))c.remove();});
+  els.forEach((e,i)=>{if(chat.children[i]!==e)chat.insertBefore(e,chat.children[i]||null);});
+  if(toBottom)scrollBottom();
+}
+function rebuildAll(){S.msgs.forEach(m=>m._sig=null);render();}
+function scrollBottom(){requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight;setTimeout(()=>chat.scrollTop=chat.scrollHeight,80);});}
+chat.addEventListener('click',e=>{if(!e.target.closest('.content'))chat.querySelectorAll('.picked').forEach(x=>x.classList.remove('picked'));});
+
+/* ── 꾹 눌러 끌어 놓기 ── */
+let press=null,drag=null;
+function sideAt(x,y){
+  const r=chatWrap.getBoundingClientRect();
+  if(x<r.left||x>r.right||y<r.top||y>r.bottom)return null;
+  return x<r.left+r.width/2?'other':'me';
+}
+function hlSide(s){dz.querySelectorAll('div').forEach(d=>d.classList.toggle('on',d.dataset.side===s));}
+function beginDrag(x,y){
+  if(S.editing)return;
+  const it=itemById(press.item.dataset.id);if(!it)return;
+  drag={it,item:press.item,sx:press.sx,sy:press.sy};
+  press.item.classList.add('lift');
+  const sz=S.tab==='emo'?96:52;
+  ghost.src=it.url;ghost.style.width=ghost.style.height=sz+'px';ghost.style.display='block';
+  dz.classList.add('show');moveDrag(x,y);
+}
+function moveDrag(x,y){const sz=parseFloat(ghost.style.width);ghost.style.transform='translate('+(x-sz/2)+'px,'+(y-sz*.75)+'px)';hlSide(sideAt(x,y));}
+function endDrag(x,y){
+  const d=drag;drag=null;
+  ghost.style.display='none';dz.classList.remove('show');hlSide(null);d.item.classList.remove('lift');
+  const s=sideAt(x,y);
+  if(s){push({side:s,type:S.tab==='emo'?'emo':'mini',srcs:[d.it]});render(true);return;}
+  if(Math.hypot(x-d.sx,y-d.sy)<10)tapItem(d.it);
+}
+function cancelAll(){if(drag){ghost.style.display='none';dz.classList.remove('show');drag.item.classList.remove('lift');drag=null;}if(press){clearTimeout(press.timer);press=null;}}
+function pressItem(t){const p=t.closest('.pitem');return p&&!p.classList.contains('add')?p:null;}
+
+/* 터치·애플펜슬 */
+grid.addEventListener('touchstart',e=>{
+  const item=pressItem(e.target);if(!item||e.touches.length>1)return;
+  const t=e.touches[0];
+  press={item,sx:t.clientX,sy:t.clientY,x:t.clientX,y:t.clientY,moved:false};
+  press.timer=setTimeout(()=>{if(press&&!press.moved)beginDrag(press.x,press.y);},230);
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(!press)return;const t=e.touches[0];
+  if(drag){e.preventDefault();moveDrag(t.clientX,t.clientY);return;}
+  press.x=t.clientX;press.y=t.clientY;
+  if(Math.hypot(t.clientX-press.sx,t.clientY-press.sy)>9){press.moved=true;clearTimeout(press.timer);press=null;}
+},{passive:false});
+document.addEventListener('touchend',e=>{
+  if(!press)return;clearTimeout(press.timer);
+  const t=e.changedTouches[0];
+  if(drag){e.preventDefault();endDrag(t.clientX,t.clientY);}
+  else if(!press.moved){e.preventDefault();const it=itemById(press.item.dataset.id);if(it)tapItem(it);}
+  press=null;
+},{passive:false});
+document.addEventListener('touchcancel',cancelAll);
+
+/* 마우스 */
+grid.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse'||e.button!==0)return;
+  const item=pressItem(e.target);if(!item)return;
+  e.preventDefault();
+  press={item,sx:e.clientX,sy:e.clientY,mouse:true};
+});
+document.addEventListener('pointermove',e=>{
+  if(!press||!press.mouse)return;
+  if(drag){moveDrag(e.clientX,e.clientY);return;}
+  if(Math.hypot(e.clientX-press.sx,e.clientY-press.sy)>6)beginDrag(e.clientX,e.clientY);
+});
+document.addEventListener('pointerup',e=>{
+  if(!press||!press.mouse)return;
+  if(drag)endDrag(e.clientX,e.clientY);
+  else{const it=itemById(press.item.dataset.id);if(it)tapItem(it);}
+  press=null;
+});
+
+/* 컴퓨터 파일 끌어 놓기: 이모티콘 창 → 현재 탭에 추가 / 채팅창 왼쪽·오른쪽 → 추가하고 바로 보내기 */
+let depth=0;
+const hasFiles=e=>e.dataTransfer&&[...e.dataTransfer.types].includes('Files');
+function inEmoWin(x,y){const r=emoWin.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;}
+document.addEventListener('dragenter',e=>{if(hasFiles(e)){e.preventDefault();depth++;}});
+document.addEventListener('dragleave',e=>{if(!hasFiles(e))return;depth--;if(depth<=0){depth=0;emoWin.classList.remove('over');dz.classList.remove('show');}});
+document.addEventListener('dragover',e=>{
+  if(!hasFiles(e))return;e.preventDefault();
+  const s=sideAt(e.clientX,e.clientY);dz.classList.toggle('show',!!s);hlSide(s);
+  const ti=document.elementFromPoint(e.clientX,e.clientY),tic=ti&&ti.closest('.ticon:not(.recent)');
+  document.querySelectorAll('.ticon.over').forEach(x=>{if(x!==tic)x.classList.remove('over');});
+  if(tic)tic.classList.add('over');
+  emoWin.classList.toggle('over',!tic&&inEmoWin(e.clientX,e.clientY));
+});
+document.addEventListener('drop',()=>document.querySelectorAll('.ticon.over').forEach(x=>x.classList.remove('over')),true);
+document.addEventListener('dragleave',()=>{if(depth<=0)document.querySelectorAll('.ticon.over').forEach(x=>x.classList.remove('over'));});
+document.addEventListener('drop',e=>{
+  if(!hasFiles(e))return;e.preventDefault();depth=0;
+  emoWin.classList.remove('over');dz.classList.remove('show');
+  const s=sideAt(e.clientX,e.clientY);
+  if(!s&&!inEmoWin(e.clientX,e.clientY))return;
+  // 탭 아이콘 줄에 놓으면 → 탭 아이콘
+  const ti=document.elementFromPoint(e.clientX,e.clientY);
+  const tic=ti&&ti.closest('.ticon');
+  if(tic&&!tic.classList.contains('recent')){
+    const pid=tic.dataset.pack;
+    setTabIcon(e.dataTransfer.files[0],pid==='new'?'new':S.packs[S.tab].find(p=>p.id==pid));return;
+  }
+  addFiles(e.dataTransfer.files).then(added=>{
+  if(s&&added.length){added.forEach(it=>push({side:s,type:S.tab==='emo'?'emo':'mini',srcs:[it]}));render(true);}});
+});
+
+/* ── 설정 서랍 ── */
+function openDrawer(which){
+  $('paneHelp').style.display=which==='help'?'flex':'none';
+  $('paneSet').style.display=which==='set'?'flex':'none';
+  $('drawerTtl').textContent=which==='help'?'사용 방법':'설정';
+  $('drawer').classList.add('show');$('dim').classList.add('show');
+}
+function closeDrawer(){$('drawer').classList.remove('show');$('dim').classList.remove('show');}
+$('helpBtn').onclick=()=>openDrawer('help');$('setBtn').onclick=()=>openDrawer('set');
+$('drawerX').onclick=closeDrawer;$('dim').onclick=closeDrawer;
+
+/* 기본 크기 = 100% (실제 PC 카카오톡 화면에 맞춘 값) */
+const BASE={'--emo':120,'--mini1':100,'--minis':36,'--inl':20};
+const sizeIn=[['sEmo','oEmo','--emo'],['sMini1','oMini1','--mini1'],['sMinis','oMinis','--minis'],['sInl','oInl','--inl']];
+function applySizes(){
+  const all=+$('sAll').value;$('oAll').textContent=all+'%';
+  sizeIn.forEach(([s,o,v])=>{const pct=+$(s).value;$(o).textContent=pct+'%';win.style.setProperty(v,Math.round(BASE[v]*all*pct/10000)+'px');});
+  store('sizesPct',[all].concat(sizeIn.map(a=>$(a[0]).value)));
+}
+const saved=load('sizesPct',null);
+if(saved){$('sAll').value=saved[0]||100;sizeIn.forEach((a,i)=>{if(saved[i+1])$(a[0]).value=saved[i+1];});}
+['sAll'].concat(sizeIn.map(a=>a[0])).forEach(id=>$(id).addEventListener('input',applySizes));
+$('sizeReset').onclick=()=>{$('sAll').value=100;sizeIn.forEach(([s])=>$(s).value=100);applySizes();};
+applySizes();
+
+function applyNames(){
+  $('roomTtl').textContent=$('roomName').value||'채팅방';
+  S.otherName=$('otherName').value||'친구';$('roomSub').textContent=S.otherName;
+  setSender(S.sender);
+}
+$('roomName').value=load('room','이모티콘 테스트방');$('otherName').value=load('other','친구');
+$('roomName').addEventListener('input',e=>{store('room',e.target.value);applyNames();});
+$('otherName').addEventListener('input',e=>{store('other',e.target.value);applyNames();rebuildAll();});
+
+function applyAvatar(){$('avatarPrev').src=S.avatar;$('headAvatar').src=S.avatar;rebuildAll();}
+$('avatarBtn').onclick=()=>$('avatarFile').click();
+$('avatarFile').onchange=e=>{const f=e.target.files[0];if(!f)return;S.avatar=URL.createObjectURL(f);applyAvatar();e.target.value='';};
+$('avatarReset').onclick=()=>{S.avatar=DEFAULT_AVATAR;applyAvatar();};
+
+function setTheme(t){
+  document.querySelectorAll('#themes .chip').forEach(c=>c.classList.toggle('on',c.dataset.t===t));
+  if(t==='custom'){win.dataset.theme='sky';win.style.setProperty('--chat-bg',$('customColor').value);}
+  else{win.dataset.theme=t;win.style.removeProperty('--chat-bg');}
+  store('theme',t);
+}
+document.querySelectorAll('#themes .chip').forEach(c=>c.addEventListener('click',()=>setTheme(c.dataset.t)));
+$('customColor').value=load('color','#c9b8e8');
+$('customColor').addEventListener('input',e=>{store('color',e.target.value);setTheme('custom');});
+setTheme(load('theme','sky'));
+
+$('unreadChk').checked=load('unread',true);
+win.classList.toggle('no-unread',!$('unreadChk').checked);
+$('unreadChk').onchange=e=>{win.classList.toggle('no-unread',!e.target.checked);store('unread',e.target.checked);};
+
+$('clearBtn').onclick=()=>{if(!S.msgs.length)return;S.msgs=[];render();closeDrawer();toast('대화를 지웠어요');};
+$('sampleBtn').onclick=()=>{
+  const E=curPack('emo').items,M=curPack('mini').items;
+  push({side:'other',type:'text',text:'오늘 수업 어땠어?',srcs:[]});
+  if(E[0])push({side:'other',type:'emo',srcs:[E[0]]});
+  push({side:'me',type:'text',text:'이모티콘 완성했어!',srcs:M[0]?[M[0]]:[]});
+  if(E.length>1)push({side:'me',type:'emo',srcs:[E[E.length-1]]});
+  if(M.length){const pick=n=>Array.from({length:n},(_,i)=>M[i%M.length]);push({side:'me',type:'mini',srcs:pick(5)});push({side:'other',type:'mini',srcs:pick(8)});}
+  push({side:'other',type:'text',text:'우와 귀엽다 👍',srcs:[]});
+  render(true);closeDrawer();
+};
+
+S.avatar=DEFAULT_AVATAR;$('avatarPrev').src=S.avatar;$('headAvatar').src=S.avatar;
+applyNames();renderGrid();render();
+})();
+</script>
+</body>
+</html>
